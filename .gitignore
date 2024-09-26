@@ -1,0 +1,4 @@
+/emscripten/
+/pkg/*.gz
+/pkg/*.xz
+/pkg/*.tgz
