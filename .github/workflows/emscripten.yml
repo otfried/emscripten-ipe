@@ -1,0 +1,46 @@
+name: Build dependencies for Ipe with emscripten
+on: workflow_dispatch
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+          actions-cache-folder: 'emsdk-cache'
+      - name: Verify emsdk
+        run: emcc -v
+      - name: Download sources
+        run: make download
+      - name: Setup
+        run: make setup
+      - name: Compile lua
+        run: make lua
+      - name: Install meson
+        run: sudo apt-get install meson
+      - name: Compile libpng
+        run: make libpng
+      - name: Compile Freetype
+        run: make freetype
+      - name: Compile Pixman
+        run: make pixman
+      - name: Compile Cairo
+        run: make cairo
+      - name: Compile libspiro
+        run: make spiro
+      - name: Compile GSL
+        run: make gsl
+      - name: View result
+        run: ls -R emscripten
+      - name: Create archive
+        run: tar czvf emscripten.tar.gz emscripten
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: emscripten
+          path: emscripten.tar.gz
+          retention-days: 2
+      - run: 'echo "Status ${{ job.status }}"'
